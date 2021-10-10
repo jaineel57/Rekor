@@ -9,6 +9,12 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import  { useState} from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,8 +57,103 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LoginPage() {
+
+
   const classes = useStyles();
 
+  const [variables, setVariables] = useState({
+    localEmail: '',
+    password: '',
+ });
+
+
+ const [roles, setRoles] = useState('resp');
+ console.log(roles,"responsedeepak")
+
+
+ 
+ const {
+  localEmail,password
+} = variables;
+
+const fetchedEmail = variables.localEmail
+console.log(fetchedEmail,"fetchedemail")
+
+const fetchedPassword = variables.password
+console.log(fetchedPassword,"fetchedpass")
+
+
+
+  // Method handles change in variables
+  const handleChange = (event) => {
+    const { target: { name, value, checked } } = event;
+
+    setVariables({
+      ...variables,
+      [name]: value || checked,
+    });
+  };
+  
+
+  // Method to check if password supplied by user confirms by our rules
+  // const passwordCheck = (pass) => {
+  //   // checking if password is not null and is longer than 8 characters
+  //   if (pass.length < 8) {
+  //     return false;
+  //   }
+
+  //   if (pass.match(/[0-9]+/g) !== null && password.match(/[a-zA-Z]+/g) !== null) {
+  //     return true;
+  //   }
+  //   return false;
+  // };
+
+  
+  
+
+  const apicall = () => {
+      signin(fetchedPassword,fetchedEmail)
+
+  }
+
+  const handleSubmit = () => {
+    console.log("handle submit running")
+    // if (!localEmail || !password) {
+    //   toast.error('Enter email or password');
+    //   return;
+    // }
+
+    // if (!passwordCheck(password)) {
+    //   toast.error('Password should contain at least one character and one number. They should also at least have 8 characters');
+    //   return;
+    // }
+
+     apicall();
+    };
+
+
+
+    const signin = async(fetchedPassword,fetchedEmail) => {
+
+      const pswd = {fetchedPassword}
+      const loginid = {fetchedEmail}
+      
+      const options = {
+        url: `http://localhost:8000/login`,
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }
+      await axios.post(`http://localhost:8000/login`, {"id": loginid,"password": pswd},
+      options)
+      .then(response=>  setRoles(response.data[0].roles))
+      .catch((errr) => {
+        console.log(errr)
+    })
+    };
+  
+  
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
@@ -73,7 +174,7 @@ export default function LoginPage() {
           <br/>
           <br/>
           &nbsp;
-          <form className={classes.form} noValidate>
+          <div className={classes.form} noValidate>
             <TextField
               variant="standard"
               margin="normal"
@@ -81,7 +182,9 @@ export default function LoginPage() {
               fullWidth
               id="email"
               label="Login Id"
-              name="email"
+              name="localEmail"
+              value={localEmail || ''}
+              onChange={handleChange}
               autoComplete="email"
               autoFocus
             />
@@ -97,6 +200,8 @@ export default function LoginPage() {
               name="password"
               label="Password"
               type="password"
+              value={password || ''}
+              onChange={handleChange}
               id="password"
               autoComplete="current-password"
             />
@@ -137,10 +242,11 @@ export default function LoginPage() {
               variant="contained"
               color="primary"
               className={classes.submit}
+              onClick={handleSubmit}
             >
               Sign In
-            </Button>
-          </form>
+            </Button>s
+          </div>
         </div>
       </Grid>
     </Grid>
