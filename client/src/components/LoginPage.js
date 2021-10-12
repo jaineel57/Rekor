@@ -10,11 +10,11 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import  { useState} from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+// import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
-
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,7 +70,17 @@ export default function LoginPage() {
  const [roles, setRoles] = useState('resp');
  console.log(roles,"responsedeepak")
 
+ const history = useHistory()
 
+ if(roles==="student"){
+  history.push("/student")
+  console.log("student")
+ }
+
+ if(roles==="teacher"){
+  history.push("/teacher")
+  console.log("teacher")
+ }
  
  const {
   localEmail,password
